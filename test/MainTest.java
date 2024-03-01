@@ -60,5 +60,20 @@ class MainTest {
     );
   }
 
-  // TODO: Create your test(s) below. /////////////////////////////////////////
+
+    @Test
+    void addBigram() {
+        assertDoesNotThrow(() -> {
+            Connection db = Main.createConnection();
+            int w0 = Main.getId(db, "firstWord");
+            int w1 = Main.getId(db, "secondWord");
+            Main.addBigram(db, w0, w1);
+            PreparedStatement ps = db.prepareStatement("SELECT COUNT(*) AS count FROM bigrams WHERE words_id = ? AND next_words_id = ?");
+            ps.setInt(1, w0);
+            ps.setInt(2, w1);
+            ResultSet rs = ps.executeQuery();
+            assertTrue(rs.next() && rs.getInt("count") == 1);
+            db.close();
+        });
+    }
 }
