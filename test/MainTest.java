@@ -60,20 +60,25 @@ class MainTest {
     );
   }
 
+    @Test
+    void createBigrams() {
+        assertThrows(SQLException.class, () -> Main.createBigrams(null, "word1 word2"));
+    }
 
     @Test
-    void addBigram() {
-        assertDoesNotThrow(() -> {
-            Connection db = Main.createConnection();
-            int w0 = Main.getId(db, "firstWord");
-            int w1 = Main.getId(db, "secondWord");
-            Main.addBigram(db, w0, w1);
-            PreparedStatement ps = db.prepareStatement("SELECT COUNT(*) AS count FROM bigrams WHERE words_id = ? AND next_words_id = ?");
-            ps.setInt(1, w0);
-            ps.setInt(2, w1);
-            ResultSet rs = ps.executeQuery();
-            assertTrue(rs.next() && rs.getInt("count") == 1);
-            db.close();
-        });
+    void addBigram() throws SQLException {
+        Connection db = Main.createConnection();
+        int initialWordCount = Main.getWordCount(db);
+
+        Main.addBigram(db, 1, 2);
+        int finalWordCount = Main.getWordCount(db);
+
+        assertEquals(initialWordCount + 2, finalWordCount);
     }
+
+
+
+
+
+
 }
